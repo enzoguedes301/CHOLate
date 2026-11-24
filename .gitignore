@@ -30,3 +30,7 @@ Thumbs.db
 # Logs / temporários
 *.log
 *.tmp
+
+# Leads capturados (dados de clientes) — NUNCA versionar
+leads/
+**/leads/
