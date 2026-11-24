@@ -23,8 +23,8 @@
   # Vem ANTES da regra de "arquivo real" para o index.html não vazar na raiz.
   RewriteRule ^$ verificacao.html [L]
 
-  # Página de erro (desktop cai aqui).
-  RewriteRule ^error/?$ error.html [L]
+  # Página de erro (desktop cai aqui) — PHP devolve conteúdo com status 404.
+  RewriteRule ^error/?$ error.php [L]
 
   # Não reescreve as APIs PHP nem arquivos reais (existentes no disco).
   RewriteCond %{REQUEST_URI} ^/api/ [OR]
