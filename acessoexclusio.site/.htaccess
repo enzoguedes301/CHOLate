@@ -1,0 +1,39 @@
+# ==========================================================================
+#  Roteamento SPA + APIs PHP (HostGator / Apache)
+#  Reproduz o comportamento do antigo server.js (Node):
+#   - /api/*.php          -> executado pelo PHP (não reescreve)
+#   - arquivo existente    -> servido direto (assets, imagens, fonts, media)
+#   - /cadastro            -> cadastro.html (shell próprio)
+#   - demais rotas do app  -> index.html (o React re-roteia no navegador)
+# ==========================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Protege o .env (nunca servir segredos)
+  RewriteRule ^\.env$ - [F,L]
+
+  # Não reescreve as APIs PHP nem arquivos reais (existentes no disco).
+  RewriteCond %{REQUEST_URI} ^/api/ [OR]
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Rota /cadastro usa o shell próprio.
+  RewriteRule ^cadastro/?$ cadastro.html [L]
+
+  # Todo o resto (rotas do router do cliente, sem extensão) -> index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Bloqueia acesso direto ao .env também via Files (dupla proteção).
+<Files ".env">
+  Require all denied
+</Files>
+
+# MIME / cache básicos
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+</IfModule>
