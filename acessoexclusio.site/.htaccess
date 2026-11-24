@@ -7,23 +7,30 @@
 #   - demais rotas do app  -> index.html (o React re-roteia no navegador)
 # ==========================================================================
 
+# Não deixa o Apache servir index.html automaticamente na raiz: quem manda
+# na raiz é a nossa regra de verificação abaixo.
+<IfModule mod_dir.c>
+  DirectoryIndex verificacao.html index.html
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
   # Protege o .env (nunca servir segredos)
   RewriteRule ^\.env$ - [F,L]
 
+  # RAIZ: antes do funil, passa pela verificação (filtro de bot + mobile-only).
+  # Vem ANTES da regra de "arquivo real" para o index.html não vazar na raiz.
+  RewriteRule ^$ verificacao.html [L]
+
+  # Página de erro (desktop cai aqui).
+  RewriteRule ^error/?$ error.html [L]
+
   # Não reescreve as APIs PHP nem arquivos reais (existentes no disco).
   RewriteCond %{REQUEST_URI} ^/api/ [OR]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-
-  # RAIZ: antes do funil, passa pela verificação (filtro de bot + mobile-only).
-  RewriteRule ^$ verificacao.html [L]
-
-  # Página de erro (desktop cai aqui).
-  RewriteRule ^error/?$ error.html [L]
 
   # Rota /cadastro usa o shell próprio.
   RewriteRule ^cadastro/?$ cadastro.html [L]
