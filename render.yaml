@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: acessoexclusio
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: acessoexclusio.site
+    buildCommand: "true"
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: DEV_MODE
+        value: "0"
+      - key: MEDUSA_BASE
+        value: https://api.medusapayoficial.pro/api/v1
+      # Segredos: NÃO ficam aqui. Defina no painel do Render (Environment).
+      - key: MEDUSA_API_KEY
+        sync: false
+      - key: MEDUSA_EMPRESA_ID
+        sync: false
+      - key: CPF_API_TOKEN
+        sync: false
