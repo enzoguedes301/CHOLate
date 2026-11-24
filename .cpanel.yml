@@ -1,0 +1,13 @@
+---
+deployment:
+  tasks:
+    # DEPLOYPATH = Document Root do domínio verificacaoconcluidanet.online.
+    # Conta HostGator: /home1/luizta74 (usuário luizta74).
+    # Se o domínio for ADDON (pasta própria), troque public_html pelo caminho
+    # da pasta do domínio (ex.: /home1/luizta74/verificacaoconcluidanet.online).
+    #
+    # Copiamos o CONTEÚDO de acessoexclusio.site/ (incl. ocultos como .htaccess)
+    # para a raiz do domínio. O .env NÃO está no repo — crie-o manualmente no
+    # DEPLOYPATH pelo Gerenciador de Arquivos (ver .env.example).
+    - export DEPLOYPATH=/home1/luizta74/public_html
+    - /bin/cp -R acessoexclusio.site/. "$DEPLOYPATH/"
