@@ -1,0 +1,1 @@
+var e=`caixa:pedido`;function t(t){try{window.localStorage.setItem(e,JSON.stringify(t))}catch{}}function n(){try{let t=window.localStorage.getItem(e);if(!t)return null;let n=JSON.parse(t);return typeof n?.total==`number`?n:null}catch{return null}}export{t as n,n as t};

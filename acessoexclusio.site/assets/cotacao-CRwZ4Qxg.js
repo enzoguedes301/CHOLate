@@ -1,0 +1,1 @@
+var e=`caixa:cotacao`;function t(t){try{window.localStorage.setItem(e,JSON.stringify(t))}catch{}}function n(){try{let t=window.localStorage.getItem(e);if(!t)return null;let n=JSON.parse(t);return typeof n?.valor!=`number`||typeof n?.seguro!=`number`?null:n}catch{return null}}export{t as n,n as t};

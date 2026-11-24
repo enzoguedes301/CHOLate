@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"C:\\\\Meus Sites\\\\cxxx\\\\acessoexclusio.site\\\\index.html\")",
+      "PowerShell(Start-Process \"c:\\\\Meus Sites\\\\cxxx\\\\acessoexclusio.site\\\\index.html\")",
+      "Bash(dd if=\"C:/Meus Sites/th/assets/index-f8rMPGcv.js\" bs=1 skip=366950 count=250)",
+      "Bash(dd if=\"C:/Meus Sites/th/assets/index-f8rMPGcv.js\" bs=1 skip=645250 count=250)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue)",
+      "Bash(grep -E \"\\\\.html$\")",
+      "Bash(node -e ' *)",
+      "PowerShell(node -e \"console.log\\('NODE OK'\\)\")",
+      "PowerShell(node --version)",
+      "PowerShell(node \"C:\\\\Users\\\\luizt\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Meus-Sites-cxxx\\\\89c43ae2-3cb5-4d8b-9d2b-3cbd39ca3159\\\\scratchpad\\\\nav2.js\")",
+      "Bash(curl -s -o /dev/null -w \"index.html -> HTTP %{http_code}\\\\n\" http://localhost:3001/)",
+      "Bash(curl -s -o /dev/null -w \"cadastro.html -> HTTP %{http_code}\\\\n\" http://localhost:3001/cadastro.html)",
+      "Bash(curl -s \"http://localhost:3001/functions/consulta?cpf=11111111111\")",
+      "Bash(curl -s -o /dev/null -w \"/api/consulta -> HTTP %{http_code}\\\\n\" \"http://localhost:3001/api/consulta?cpf=11111111111\")",
+      "PowerShell(node \"C:\\\\Users\\\\luizt\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Meus-Sites-cxxx\\\\89c43ae2-3cb5-4d8b-9d2b-3cbd39ca3159\\\\scratchpad\\\\api.js\")",
+      "Bash(curl -s \"http://localhost:3001/functions/consulta?cpf=12345678900\")"
+    ]
+  }
+}

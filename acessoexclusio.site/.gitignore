@@ -1,0 +1,15 @@
+# Segredos / ambiente — NUNCA versionar
+.env
+.env.local
+.env.*.local
+
+# Ferramentas de desenvolvimento (navegação livre do funil) — só local
+dev/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

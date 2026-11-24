@@ -1,0 +1,1 @@
+import{r as e}from"./useRouter-mso78Z2_.js";var t=e();function n({className:e=`h-9 w-auto`}){return(0,t.jsx)(`img`,{src:`/logo.png`,alt:`Caixa`,className:e})}export{n as t};

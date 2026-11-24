@@ -1,0 +1,32 @@
+# ==========================================================================
+#  Segredos / ambiente — NUNCA versionar
+# ==========================================================================
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Ferramentas de desenvolvimento (navegação livre do funil) — só local
+dev/
+**/dev/
+
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Claude Code — config de máquina (local)
+.claude/settings.local.json
+.claude/projects/
+.claude/**/memory/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / temporários
+*.log
+*.tmp

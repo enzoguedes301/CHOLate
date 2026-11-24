@@ -1,0 +1,1 @@
+var e=`caixa:conta`;function t(t){try{window.localStorage.setItem(e,JSON.stringify(t))}catch{}}function n(){try{let t=window.localStorage.getItem(e);if(!t)return null;let n=JSON.parse(t);return typeof n?.senhaAcesso==`string`?n:null}catch{return null}}function r(e){let t=(e||``).replace(/\D/g,``).padStart(11,`7`);return`${t.slice(0,5)}-${t.slice(5,6)}`}export{n,t as r,r as t};
