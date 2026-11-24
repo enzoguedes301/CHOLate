@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Verificação de segurança</title>
+  <link rel="icon" href="/favicon.png" />
+  <style>
+    :root{
+      --azul:#0b5fff;
+      --azul-esc:#0a3db8;
+      --laranja:#ff7a00;
+      --laranja-esc:#e86a00;
+      --card:#ffffff;
+      --txt:#0f172a;
+      --txt2:#64748b;
+      --trilho:#e6ebf5;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      min-height:100dvh;
+      display:flex;align-items:center;justify-content:center;
+      padding:24px;
+      color:var(--txt);
+      background:linear-gradient(135deg,#0b5fff 0%,#0a3db8 55%,#ff7a00 100%);
+      background-attachment:fixed;
+      -webkit-font-smoothing:antialiased;
+    }
+    .card{
+      width:100%;max-width:400px;
+      background:var(--card);
+      border-radius:24px;
+      padding:40px 32px 32px;
+      box-shadow:0 30px 60px -15px rgba(10,30,80,.45), 0 0 0 1px rgba(255,255,255,.4);
+      text-align:center;
+      animation:pop .5s cubic-bezier(.2,.9,.3,1.2);
+    }
+    @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+    .shield{
+      width:64px;height:64px;margin:0 auto 20px;
+      border-radius:18px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(140deg,var(--azul),var(--azul-esc));
+      box-shadow:0 12px 24px -6px rgba(11,95,255,.55);
+      position:relative;
+    }
+    .shield::after{
+      content:"";position:absolute;inset:0;border-radius:18px;
+      box-shadow:inset 0 2px 6px rgba(255,255,255,.35);
+    }
+    .shield svg{width:30px;height:30px;color:#fff}
+    h1{font-size:25px;line-height:1.2;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+    h1 .hl{color:var(--laranja)}
+    .sub{font-size:14.5px;color:var(--txt2);line-height:1.5;margin-bottom:26px}
+    .spinner{
+      width:74px;height:74px;margin:6px auto 22px;position:relative;
+    }
+    .spinner svg{width:100%;height:100%;transform:rotate(-90deg)}
+    .spinner .trilho{fill:none;stroke:var(--trilho);stroke-width:7}
+    .spinner .arco{
+      fill:none;stroke:url(#grad);stroke-width:7;stroke-linecap:round;
+      stroke-dasharray:201;stroke-dashoffset:150;
+      animation:spin 1s linear infinite;
+      transform-origin:center;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .status{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:14px;min-height:20px}
+    .barra{height:8px;border-radius:99px;background:var(--trilho);overflow:hidden}
+    .barra > i{
+      display:block;height:100%;width:0%;border-radius:99px;
+      background:linear-gradient(90deg,var(--azul),var(--laranja));
+      transition:width .4s ease;
+    }
+    .rodape{font-size:12.5px;color:var(--txt2);margin-top:14px}
+    .btn{
+      display:none;width:100%;margin-top:22px;
+      padding:15px 20px;border:none;border-radius:14px;cursor:pointer;
+      font-size:16px;font-weight:800;color:#fff;letter-spacing:.01em;
+      background:linear-gradient(135deg,var(--laranja),var(--laranja-esc));
+      box-shadow:0 12px 24px -6px rgba(255,122,0,.6);
+      transition:transform .12s ease, box-shadow .2s ease;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 16px 30px -8px rgba(255,122,0,.7)}
+    .btn:active{transform:translateY(0)}
+    .btn.show{display:block;animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
+    .check{
+      display:none;width:64px;height:64px;margin:6px auto 22px;
+      border-radius:50%;background:linear-gradient(140deg,#16a34a,#15803d);
+      align-items:center;justify-content:center;
+      box-shadow:0 12px 24px -6px rgba(22,163,74,.5);
+    }
+    .check.show{display:flex;animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
+    .check svg{width:32px;height:32px;color:#fff}
+    .selo{
+      margin-top:18px;font-size:11.5px;color:var(--txt2);
+      display:flex;align-items:center;justify-content:center;gap:6px;
+    }
+    .selo svg{width:13px;height:13px;color:var(--azul)}
+    @media (max-width:380px){ .card{padding:32px 22px 26px} h1{font-size:22px} }
+  </style>
+</head>
+<body>
+  <main class="card" role="status" aria-live="polite">
+    <div class="shield" id="shield" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+
+    <div class="check" id="check" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6 9 17l-5-5"/>
+      </svg>
+    </div>
+
+    <h1 id="titulo">Verificando se você é <span class="hl">humano…</span></h1>
+    <p class="sub" id="sub">Aguarde alguns segundos para continuar com segurança.</p>
+
+    <div class="spinner" id="spinner" aria-hidden="true">
+      <svg viewBox="0 0 74 74">
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#0b5fff"/>
+            <stop offset="1" stop-color="#ff7a00"/>
+          </linearGradient>
+        </defs>
+        <circle class="trilho" cx="37" cy="37" r="32"/>
+        <circle class="arco" cx="37" cy="37" r="32"/>
+      </svg>
+    </div>
+
+    <div class="status" id="status">Validando sinais do navegador…</div>
+    <div class="barra" aria-hidden="true"><i id="barra"></i></div>
+    <p class="rodape" id="rodape">Verificação automática em andamento.</p>
+
+    <button class="btn" id="continuar" type="button">Continuar com segurança →</button>
+
+    <div class="selo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Conexão protegida
+    </div>
+  </main>
+
+  <script>
+  (function(){
+    "use strict";
+    var DESTINO = "/inicio";          // para onde o humano (mobile) vai
+    var ERRO    = "/error";           // para onde o desktop vai
+    var COOKIE  = "vrf_ok";           // marca que já passou
+    var MIN_MS  = 2200;               // tempo mínimo do "checando"
+
+    // ---- Detecção de dispositivo: só CELULAR passa; PC vai pra /error ----
+    function ehMobile(){
+      var ua = navigator.userAgent || "";
+      // 1) User-Agent de dispositivo móvel
+      var uaMobile = /Android|iPhone|iPod|iPad|Windows Phone|webOS|BlackBerry|IEMobile|Opera Mini|Mobile|Mobi/i.test(ua);
+      // 2) Client Hints (Chrome moderno) — mais confiável que UA
+      var chMobile = (navigator.userAgentData && typeof navigator.userAgentData.mobile === "boolean")
+                      ? navigator.userAgentData.mobile : null;
+      // 3) Capacidade de toque + tela estreita (reforço)
+      var temToque = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+      var telaEstreita = Math.min(screen.width, screen.height) <= 820;
+      var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+
+      // iPadOS recente se declara como "Macintosh" — pega pelo toque.
+      var iPadDisfarcado = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+
+      if (chMobile === true) return true;
+      if (chMobile === false && !iPadDisfarcado) return false;
+      // Sem client hints: combina UA + toque/tela.
+      return uaMobile || iPadDisfarcado || (temToque && coarse && telaEstreita);
+    }
+
+    if (!ehMobile()){
+      location.replace(ERRO);
+      return;
+    }
+
+    // Se já verificou nesta sessão/dispositivo, pula direto.
+    try{
+      if (document.cookie.indexOf(COOKIE + "=1") !== -1){
+        location.replace(DESTINO + (location.search || "")); return;
+      }
+    }catch(e){}
+
+    // ---- Sinais anti-bot (heurística leve; não bloqueia humano real) ----
+    var suspeito = 0;
+    try{
+      var n = navigator;
+      if (n.webdriver === true) suspeito += 3;                 // automação
+      if (!n.languages || n.languages.length === 0) suspeito += 1;
+      if ((n.plugins ? n.plugins.length : 0) === 0 && !/Mobi/i.test(n.userAgent)) suspeito += 1;
+      if (/HeadlessChrome|PhantomJS|Electron|slimerjs/i.test(n.userAgent)) suspeito += 3;
+      if (window.outerWidth === 0 || window.outerHeight === 0) suspeito += 1;
+      if (!window.chrome && /Chrome\//.test(n.userAgent) && !/Edg|OPR/.test(n.userAgent)) suspeito += 1;
+    }catch(e){}
+
+    // Interação humana real reduz suspeita.
+    var interagiu = false;
+    ["mousemove","touchstart","keydown","scroll","pointerdown"].forEach(function(ev){
+      window.addEventListener(ev, function(){ interagiu = true; }, {once:true, passive:true});
+    });
+
+    var barra   = document.getElementById("barra");
+    var statusEl= document.getElementById("status");
+    var spinner = document.getElementById("spinner");
+    var shield  = document.getElementById("shield");
+    var check   = document.getElementById("check");
+    var titulo  = document.getElementById("titulo");
+    var sub     = document.getElementById("sub");
+    var rodape  = document.getElementById("rodape");
+    var btn     = document.getElementById("continuar");
+
+    var etapas = [
+      {p:25, t:"Validando sinais do navegador…"},
+      {p:55, t:"Analisando conexão…"},
+      {p:80, t:"Confirmando integridade…"},
+      {p:100,t:"Verificação concluída."}
+    ];
+    var i = 0, inicio = Date.now();
+
+    function passo(){
+      if (i < etapas.length){
+        barra.style.width = etapas[i].p + "%";
+        statusEl.textContent = etapas[i].t;
+        i++;
+        setTimeout(passo, MIN_MS/etapas.length);
+      } else {
+        finalizar();
+      }
+    }
+
+    function finalizar(){
+      var decorrido = Date.now() - inicio;
+      var espera = Math.max(0, MIN_MS - decorrido);
+      setTimeout(function(){
+        spinner.style.display = "none";
+        shield.style.display  = "none";
+        check.classList.add("show");
+        titulo.innerHTML = "Você foi <span class=\"hl\">verificado!</span>";
+        sub.textContent  = "Tudo certo. Clique abaixo para continuar.";
+        statusEl.style.display = "none";
+        document.querySelector(".barra").style.display = "none";
+        rodape.textContent = "Proteção ativa contra tráfego automatizado.";
+        btn.classList.add("show");
+      }, espera);
+    }
+
+    function liberar(){
+      try{
+        // cookie de 12h para não re-verificar
+        var d = new Date(Date.now() + 12*60*60*1000).toUTCString();
+        document.cookie = COOKIE + "=1; expires=" + d + "; path=/; SameSite=Lax";
+      }catch(e){}
+      // preserva query string (utm, fbclid etc.) ao entrar no funil
+      var qs = location.search || "";
+      location.replace(DESTINO + qs);
+    }
+
+    btn.addEventListener("click", function(){
+      // bot muito suspeito e sem nenhuma interação: atrasa/segura
+      if (suspeito >= 4 && !interagiu){
+        btn.textContent = "Validando…";
+        setTimeout(liberar, 1200);
+        return;
+      }
+      liberar();
+    });
+
+    passo();
+  })();
+  </script>
+</body>
+</html>

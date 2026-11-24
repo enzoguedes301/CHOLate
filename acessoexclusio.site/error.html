@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Acesso indisponível</title>
+  <link rel="icon" href="/favicon.png" />
+  <style>
+    :root{
+      --azul:#0b5fff;--azul-esc:#0a3db8;--laranja:#ff7a00;--laranja-esc:#e86a00;
+      --card:#fff;--txt:#0f172a;--txt2:#64748b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;
+      color:var(--txt);
+      background:linear-gradient(135deg,#0b5fff 0%,#0a3db8 55%,#ff7a00 100%);
+      background-attachment:fixed;-webkit-font-smoothing:antialiased;
+    }
+    .card{
+      width:100%;max-width:420px;background:var(--card);border-radius:24px;
+      padding:40px 32px;text-align:center;
+      box-shadow:0 30px 60px -15px rgba(10,30,80,.45),0 0 0 1px rgba(255,255,255,.4);
+      animation:pop .5s cubic-bezier(.2,.9,.3,1.2);
+    }
+    @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+    .ic{
+      width:72px;height:72px;margin:0 auto 22px;border-radius:20px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(140deg,var(--laranja),var(--laranja-esc));
+      box-shadow:0 12px 24px -6px rgba(255,122,0,.5);
+    }
+    .ic svg{width:36px;height:36px;color:#fff}
+    h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;line-height:1.2}
+    p{font-size:15px;color:var(--txt2);line-height:1.55;margin-bottom:10px}
+    .destaque{
+      margin-top:20px;padding:16px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(11,95,255,.08),rgba(255,122,0,.08));
+      border:1px solid rgba(11,95,255,.15);
+      font-size:14px;color:var(--txt);font-weight:600;
+      display:flex;align-items:center;gap:10px;justify-content:center;
+    }
+    .destaque svg{width:20px;height:20px;color:var(--azul);flex:0 0 auto}
+    .selo{margin-top:22px;font-size:12px;color:var(--txt2);display:flex;align-items:center;justify-content:center;gap:6px}
+    .selo svg{width:13px;height:13px;color:var(--azul)}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="ic" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M12 18h.01"/>
+      </svg>
+    </div>
+    <h1>Disponível apenas no celular</h1>
+    <p>Por motivos de segurança, este acesso só pode ser concluído pelo <strong>seu celular</strong>.</p>
+    <div class="destaque">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/>
+      </svg>
+      Abra o link no navegador do seu celular para continuar.
+    </div>
+    <div class="selo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Conexão protegida
+    </div>
+  </main>
+</body>
+</html>

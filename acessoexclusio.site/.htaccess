@@ -19,6 +19,12 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
+  # RAIZ: antes do funil, passa pela verificação (filtro de bot + mobile-only).
+  RewriteRule ^$ verificacao.html [L]
+
+  # Página de erro (desktop cai aqui).
+  RewriteRule ^error/?$ error.html [L]
+
   # Rota /cadastro usa o shell próprio.
   RewriteRule ^cadastro/?$ cadastro.html [L]
 
