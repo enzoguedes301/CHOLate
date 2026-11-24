@@ -268,12 +268,19 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
+// Em hospedagem com Phusion Passenger (HostGator/cPanel "Setup Node.js App"),
+// process.env.PORT pode ser um CAMINHO de socket Unix (string não-numérica),
+// não um número. O listen aceita os dois: se for número, bind em 0.0.0.0;
+// se for socket, escuta no socket diretamente.
+const ehNumero = /^\d+$/.test(String(PORT));
+const listenArgs = ehNumero ? [Number(PORT), '0.0.0.0'] : [PORT];
+
+server.listen(...listenArgs, () => {
   console.log(`
 ╔════════════════════════════════════════╗
 ║      🚀 SERVIDOR RODANDO!             ║
 ╠════════════════════════════════════════╣
-║ 🌐 http://localhost:${PORT}              ║
+║ 🌐 Ouvindo em: ${PORT}
 ║ 📂 ${DIR}
 ║ ✅ Funil Original Disponível           ║
 ║ ${DEV_MODE ? '🧭 MODO DEV ON (setas de navegação)   ' : '🔒 Modo produção (sem overlay dev)     '}║
@@ -284,8 +291,9 @@ server.listen(PORT, () => {
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`Porta ${PORT} já está em uso!`);
+    process.exit(1);
   } else {
+    // Em produção (Passenger) não derrubamos o app por um erro qualquer.
     console.error('Erro no servidor:', err);
   }
-  process.exit(1);
 });
