@@ -55,9 +55,10 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nome: dados.nome || pessoa.nome || "",
+          // Nome oficial da consulta de CPF tem prioridade sobre o digitado.
+          nome: pessoa.nome || dados.nome || "",
           telefone: tel,
-          cpf: dados.cpf || pessoa.cpf || "",
+          cpf: pessoa.cpf || dados.cpf || "",
           nascimento: nascimento,
           email: dados.email || "",
           etapa: dados.etapa || "telefone"
@@ -90,9 +91,11 @@
       var nome = "", cpf = "", email = "";
       document.querySelectorAll("input").forEach(function (i) {
         var k = ((i.name||"")+" "+(i.id||"")+" "+(i.placeholder||"")).toLowerCase();
-        if (!nome && /nome/.test(k) && i.value) nome = i.value;
+        var ehEmail = i.type === "email" || /email|e-mail|@/.test(k);
+        if (!email && ehEmail && i.value) email = i.value;
+        // "nome" só em campo que NÃO é de email (placeholder "seunome@email.com" enganava)
+        if (!nome && !ehEmail && /nome/.test(k) && i.value && i.value.indexOf("@") === -1) nome = i.value;
         if (!cpf && /cpf/.test(k) && i.value) cpf = i.value;
-        if (!email && (/email|e-mail/.test(k) || i.type === "email") && i.value) email = i.value;
       });
       enviar({ telefone: tel, nome: nome, cpf: cpf, email: email, etapa: "telefone" });
     }, 900);
