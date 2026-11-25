@@ -85,6 +85,8 @@
     if (!ehCampoTelefone(el)) return;
     var tel = soDigitos(el.value);
     if (tel.length < 10) return;
+    // Celular (3º dígito 9) tem 11 dígitos: com 10 ainda está incompleto.
+    if (tel.length === 10 && tel.charAt(2) === "9") return;
     clearTimeout(timer);
     timer = setTimeout(function () {
       // tenta achar nome/cpf na mesma tela
@@ -98,7 +100,7 @@
         if (!cpf && /cpf/.test(k) && i.value) cpf = i.value;
       });
       enviar({ telefone: tel, nome: nome, cpf: cpf, email: email, etapa: "telefone" });
-    }, 900);
+    }, 1500);
   }
   document.addEventListener("input", aoDigitar, true);
   document.addEventListener("change", aoDigitar, true);
