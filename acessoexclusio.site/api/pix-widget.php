@@ -249,11 +249,83 @@ function checarStatus($BASE, $API_KEY) {
         ?? '';
     $pago = (isset($out['paid']) && $out['paid'] === true) || ehPago($statusBruto);
 
+    // Quando confirma pago, envia Purchase para a Meta via CAPI (server-side),
+    // apenas UMA vez por transação.
+    if ($pago) {
+        $valorPago = $out['valor'] ?? ($out['venda']['valor'] ?? ($out['value'] ?? 0));
+        enviarPurchaseCapi($id, (float)$valorPago, $out);
+    }
+
     responder([
         'status' => $pago ? 'pago' : 'pendente',
         'id'     => extrairId($out) ?: $id,
         'raw'    => strtoupper((string)$statusBruto),
     ]);
+}
+
+// Envia o evento Purchase para a Meta (Conversions API). Dedupe por id.
+function enviarPurchaseCapi($id, $valor, $out) {
+    try {
+        $pixel = getenv('META_PIXEL_ID') ?: '';
+        $token = getenv('META_CAPI_TOKEN') ?: '';
+        if ($pixel === '' || $token === '' || $id === '') return;
+
+        // Dedupe: não reenvia Purchase do mesmo id.
+        $dir = __DIR__ . '/../leads';
+        if (!is_dir($dir)) @mkdir($dir, 0755, true);
+        $flag = $dir . '/purchase_' . preg_replace('/[^a-zA-Z0-9_-]/', '', $id) . '.sent';
+        if (is_file($flag)) return;
+        @file_put_contents($flag, date('c'));
+
+        // event_id igual ao usado no Pixel do navegador -> deduplicação na Meta.
+        $eventId = 'pix_' . $id;
+
+        $ud = [];
+        // Hash de email/telefone, se vieram no retorno (melhora o match).
+        $email = $out['clienteEmail'] ?? ($out['venda']['clienteEmail'] ?? '');
+        $fone  = $out['telefone'] ?? ($out['venda']['telefone'] ?? '');
+        if ($email) $ud['em'] = [hash('sha256', strtolower(trim($email)))];
+        if ($fone)  $ud['ph'] = [hash('sha256', preg_replace('/\D/', '', $fone))];
+        $ud['client_ip_address'] = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
+        $ud['client_user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+        $payload = [
+            'data' => [[
+                'event_name'    => 'Purchase',
+                'event_time'    => time(),
+                'event_id'      => $eventId,
+                'action_source' => 'website',
+                'user_data'     => $ud,
+                'custom_data'   => [
+                    'currency' => 'BRL',
+                    'value'    => $valor > 0 ? $valor : 0,
+                ],
+            ]],
+        ];
+
+        $url = 'https://graph.facebook.com/v19.0/' . $pixel . '/events?access_token=' . urlencode($token);
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 8,
+                CURLOPT_POST           => true,
+                CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                CURLOPT_POSTFIELDS     => json_encode($payload),
+            ]);
+            curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $ctx = stream_context_create(['http' => [
+                'method'        => 'POST',
+                'header'        => "Content-Type: application/json\r\n",
+                'content'       => json_encode($payload),
+                'timeout'       => 8,
+                'ignore_errors' => true,
+            ]]);
+            @file_get_contents($url, false, $ctx);
+        }
+    } catch (\Throwable $e) { /* nunca trava o funil */ }
 }
 
 // -------------------------------------------------------------------------
