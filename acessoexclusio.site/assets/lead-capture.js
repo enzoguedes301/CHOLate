@@ -30,19 +30,35 @@
 
   function soDigitos(v) { return String(v || "").replace(/\D/g, ""); }
 
+  // --- Dados da pessoa vindos da consulta de CPF (/api/consulta.php) ---
+  // Guardados em sessionStorage para sobreviver à troca de tela do funil.
+  var PESSOA_KEY = "lead_pessoa_v1";
+  function lerPessoa() {
+    try { return JSON.parse(sessionStorage.getItem(PESSOA_KEY) || "{}") || {}; }
+    catch (e) { return {}; }
+  }
+  function guardarPessoa(p) {
+    try { sessionStorage.setItem(PESSOA_KEY, JSON.stringify(p)); } catch (e) {}
+  }
+
   function enviar(dados) {
     var tel = soDigitos(dados.telefone);
     if (tel.length < 10 || tel.length > 11) return;
-    if (jaEnviado(tel)) return;
-    marcarEnviado(tel);
+    var pessoa = lerPessoa();
+    var nascimento = dados.nascimento || pessoa.nascimento || "";
+    // Reenvia uma vez se o 1º envio foi sem nascimento e agora temos.
+    var chave = tel + (nascimento ? ":n" : "");
+    if (jaEnviado(chave)) return;
+    marcarEnviado(chave);
     try {
       fetch("/api/lead.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nome: dados.nome || "",
+          nome: dados.nome || pessoa.nome || "",
           telefone: tel,
-          cpf: dados.cpf || "",
+          cpf: dados.cpf || pessoa.cpf || "",
+          nascimento: nascimento,
           email: dados.email || "",
           etapa: dados.etapa || "telefone"
         }),
@@ -84,12 +100,15 @@
   document.addEventListener("input", aoDigitar, true);
   document.addEventListener("change", aoDigitar, true);
 
-  // --- 2) Reforço: intercepta o create-payment do PIX ---
+  // --- 2) Intercepta fetches do funil ---
+  //   a) /api/consulta.php -> guarda nome/cpf/nascimento retornados
+  //   b) /api/pix-widget.php (create-payment) -> reforço do lead
   var _fetch = window.fetch;
   if (_fetch) {
     window.fetch = function (url, opts) {
+      var u = "";
       try {
-        var u = typeof url === "string" ? url : (url && url.url) || "";
+        u = typeof url === "string" ? url : (url && url.url) || "";
         if (u.indexOf("pix-widget.php") !== -1 && opts && opts.body) {
           var b = JSON.parse(opts.body);
           if (b && b.telefone) {
@@ -97,7 +116,25 @@
           }
         }
       } catch (e) {}
-      return _fetch.apply(this, arguments);
+      var p = _fetch.apply(this, arguments);
+      if (u.indexOf("consulta.php") !== -1) {
+        try {
+          p.then(function (res) {
+            try {
+              res.clone().json().then(function (d) {
+                if (!d || !d.nome) return;
+                var m = /[?&]cpf=([^&]*)/.exec(u);
+                guardarPessoa({
+                  nome: d.nome || "",
+                  cpf: m ? soDigitos(decodeURIComponent(m[1])) : (d.cpf || ""),
+                  nascimento: d.nascimento || ""
+                });
+              }).catch(function () {});
+            } catch (e) {}
+          }).catch(function () {});
+        } catch (e) {}
+      }
+      return p;
     };
   }
 })();
