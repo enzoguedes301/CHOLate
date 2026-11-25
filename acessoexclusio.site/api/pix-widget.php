@@ -141,37 +141,8 @@ function ehPago($status) {
     return in_array($s, ['aprovado', 'approved', 'paid', 'pago', 'payment.approved'], true);
 }
 
-// Grava um lead no CSV (mesmo arquivo usado por lead.php).
-function salvarLead($d) {
-    try {
-        $telefone = preg_replace('/\D/', '', (string)($d['telefone'] ?? ''));
-        if (strlen($telefone) < 10) return;
-
-        $dir = __DIR__ . '/../leads';
-        if (!is_dir($dir)) @mkdir($dir, 0755, true);
-        $ht = $dir . '/.htaccess';
-        if (!is_file($ht)) @file_put_contents($ht, "Require all denied\n");
-
-        $arquivo = $dir . '/leads.csv';
-        if (!is_file($arquivo)) {
-            @file_put_contents($arquivo, "data_hora;nome;telefone;cpf;email;etapa;ip\n", LOCK_EX);
-        }
-        $limpa = function ($s) { return str_replace([';', "\r", "\n"], [',', ' ', ' '], (string)$s); };
-        $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
-        $ip = $limpa(trim(explode(',', $ip)[0]));
-
-        $linha = implode(';', [
-            date('Y-m-d H:i:s'),
-            $limpa($d['nome'] ?? ''),
-            $telefone,
-            preg_replace('/\D/', '', (string)($d['cpf'] ?? '')),
-            $limpa($d['email'] ?? ''),
-            $limpa($d['etapa'] ?? ''),
-            $ip,
-        ]) . "\n";
-        @file_put_contents($arquivo, $linha, FILE_APPEND | LOCK_EX);
-    } catch (\Throwable $e) { /* nunca trava o funil */ }
-}
+// Gravação de lead no CSV (mesma lógica de lead.php: dedupe por telefone).
+require_once __DIR__ . '/lead-store.php';
 
 // -------------------------------------------------------------------------
 // Ações
@@ -193,12 +164,13 @@ function criarPagamento($BASE, $API_KEY, $QR_TTL) {
     }
 
     // Captura o lead (não trava o fluxo se falhar).
-    salvarLead([
-        'nome'     => $data['nome'] ?? '',
-        'telefone' => $data['telefone'] ?? '',
-        'cpf'      => $cpf,
-        'email'    => $data['email'] ?? '',
-        'etapa'    => 'pix:' . ($data['descricao'] ?? ''),
+    gravarLead([
+        'nome'       => $data['nome'] ?? '',
+        'telefone'   => $data['telefone'] ?? '',
+        'cpf'        => $cpf,
+        'nascimento' => $data['nascimento'] ?? '',
+        'email'      => $data['email'] ?? '',
+        'etapa'      => 'pix:' . ($data['descricao'] ?? ''),
     ]);
 
     $payload = [
